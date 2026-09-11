@@ -23,6 +23,11 @@ const DETECT_WIDTH = 640;
 /** Displayed band width. Upscaled server-side where the service allows it. */
 const BAND_WIDTH = 800;
 
+/** BlazeFace happily finds faces in drapery and craquelure at low confidence,
+ * and those bands come back as blank paint. There are hundreds of candidates
+ * per search, so discarding the weak ones costs nothing. */
+const MIN_SCORE = 0.6;
+
 function loadImage(src: string): Promise<HTMLImageElement> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
@@ -93,7 +98,7 @@ export async function makeSlot(
 		);
 		const faces = await detectFaces(probe);
 		const best = faces.sort((a, b) => b.score - a.score)[0];
-		if (best) {
+		if (best && best.score >= MIN_SCORE) {
 			// Keypoints are in probe pixels; bands are cut in source pixels.
 			const scale = resolved.width / probe.naturalWidth;
 			const scaled = {

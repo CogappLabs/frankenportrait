@@ -49,6 +49,11 @@ export function bandRegion(
 	const drop = mouth.y - eyeY;
 	if (drop <= 0) return null;
 
+	// A frontal face drops about one inter-ocular width from eyes to mouth.
+	// Much more than that means the detector has paired one sitter's eyes with
+	// something far below them, and the band comes back as blank skin or cloth.
+	if (drop > ocular * 2) return null;
+
 	const spans: Record<BandName, [number, number]> = {
 		eyes: [eyeY - drop * 0.75, eyeY + drop * 0.3],
 		nose: [eyeY + drop * 0.3, eyeY + drop * 0.85],
