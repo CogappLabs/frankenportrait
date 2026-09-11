@@ -3,6 +3,9 @@ import { type Provider, registerProvider } from "../lib/providers";
 
 const SEARCH_API = "https://api.wellcomecollection.org/catalogue/v2/works";
 const PAGE_SIZE = 100;
+
+/** The catalogue API returns no page url, but work ids are stable here. */
+const WORK_PAGE = "https://wellcomecollection.org/works/";
 const IIIF_RE = /https:\/\/iiif\.wellcomecollection\.org\/image\/([^/]+)/;
 
 // Public domain and attribution-only. Excludes cc-by-nc and in-copyright, since
@@ -60,7 +63,7 @@ export const wellcomeProvider: Provider = {
 				if (!base) return null;
 				const artist = firstContributor(w);
 				const date = firstDate(w);
-				const ref = `wellcome:${encodeURIComponent(base)}|${encodeURIComponent(w.title)}|${encodeURIComponent(artist ?? "")}|${encodeURIComponent(date ?? "")}`;
+				const ref = `wellcome:${encodeURIComponent(base)}|${encodeURIComponent(w.title)}|${encodeURIComponent(artist ?? "")}|${encodeURIComponent(date ?? "")}|${encodeURIComponent(w.id)}`;
 				return {
 					id: w.id,
 					title: w.title,
@@ -73,7 +76,7 @@ export const wellcomeProvider: Provider = {
 	},
 	resolve: async (ref) => {
 		const body = ref.startsWith("wellcome:") ? ref.slice(9) : ref;
-		const [serviceBase, title, artist, date] = body
+		const [serviceBase, title, artist, date, id] = body
 			.split("|")
 			.map((s) => decodeURIComponent(s));
 		const infoRes = await fetch(`${serviceBase}/info.json`);
@@ -85,6 +88,7 @@ export const wellcomeProvider: Provider = {
 			width: info.width,
 			height: info.height,
 			upscales: declaresUpscaling(info),
+			pageUrl: id ? `${WORK_PAGE}${id}` : undefined,
 			label: title || serviceBase,
 			metadata: {
 				title: title || "",

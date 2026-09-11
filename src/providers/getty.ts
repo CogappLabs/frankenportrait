@@ -88,7 +88,7 @@ export const gettyProvider: Provider = {
 	},
 	resolve: async (ref) => {
 		const body = ref.startsWith("getty:") ? ref.slice(6) : ref;
-		const [serviceBase, title, artist, year] = body
+		const [serviceBase, title, artist, year, pageUrl] = body
 			.split("|")
 			.map((s) => decodeURIComponent(s));
 		const infoRes = await fetch(`${serviceBase}/info.json`);
@@ -100,6 +100,7 @@ export const gettyProvider: Provider = {
 			width: info.width,
 			height: info.height,
 			upscales: declaresUpscaling(info),
+			pageUrl: pageUrl || undefined,
 			label: title || serviceBase,
 			metadata: {
 				title: title || "",

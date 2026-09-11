@@ -12,6 +12,7 @@ export type Slot = {
 	title: string;
 	artist?: string;
 	provider: string;
+	pageUrl?: string;
 };
 
 /** Detection runs on a downscaled copy; big IIIF images are slow and needless. */
@@ -118,6 +119,7 @@ export async function makeSlot(
 		title: resolved.metadata?.title || resolved.label,
 		artist: resolved.metadata?.artist,
 		provider: provider.name,
+		pageUrl: resolved.pageUrl,
 	};
 }
 

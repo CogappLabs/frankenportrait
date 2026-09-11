@@ -14,6 +14,8 @@ export type ResolvedSource = {
 	height: number;
 	/** Service advertises sizeUpscaling, so a band may be asked for at "^w,". */
 	upscales: boolean;
+	/** The object's page at the institution, for crediting the band. */
+	pageUrl?: string;
 	label: string;
 	metadata?: { title: string; artist?: string; date?: string };
 };

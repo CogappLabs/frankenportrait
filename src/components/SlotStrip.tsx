@@ -18,6 +18,10 @@ export function SlotStrip({
 	onReroll,
 	label,
 }: Props) {
+	const credit = slot
+		? `${slot.title}${slot.artist ? ` · ${slot.artist}` : ""} · ${slot.provider}`
+		: "";
+
 	return (
 		<div className="group relative bg-neutral-800 min-h-24">
 			{slot && !loading ? (
@@ -55,10 +59,18 @@ export function SlotStrip({
 					{slot ? (
 						<>
 							{" · "}
-							<span className="text-neutral-300">
-								{slot.title}
-								{slot.artist ? ` · ${slot.artist}` : ""} · {slot.provider}
-							</span>
+							{slot.pageUrl ? (
+								<a
+									href={slot.pageUrl}
+									target="_blank"
+									rel="noreferrer"
+									className="text-neutral-300 underline hover:text-white"
+								>
+									{credit}
+								</a>
+							) : (
+								<span className="text-neutral-300">{credit}</span>
+							)}
 						</>
 					) : null}
 				</p>
