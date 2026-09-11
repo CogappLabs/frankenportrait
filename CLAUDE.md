@@ -53,6 +53,11 @@ found, and `rollSlot` keeps drawing candidates until one works. Portrait
 searches return plenty of text plates and specimen photographs, so several
 misses per slot is normal.
 
+Two guards keep bands off blank paint. `makeSlot` discards detections below
+`MIN_SCORE`, and `bandRegion` discards a face whose eye-to-mouth drop exceeds
+twice the inter-ocular distance, which means the detector has paired eyes with
+something well below them.
+
 Detection runs on a 640px-wide copy and the keypoints are scaled back up to
 source pixels before the region is computed.
 

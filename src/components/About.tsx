@@ -79,9 +79,15 @@ export function About({ onBack }: { onBack: () => void }) {
 				<p>
 					Cuts are placed off those keypoints rather than off image height, and
 					the slice width is scaled to the distance between the eyes, so
-					features land on features whatever the original framing. A portrait
-					with no detectable face is skipped and another drawn, which is why a
-					band sometimes checks several before it settles.
+					features land on features whatever the original framing.
+				</p>
+				<p>
+					BlazeFace will also find faces in drapery and craquelure, so a
+					candidate is dropped unless the detection is confident and the
+					eye-to-mouth drop is plausible for the distance between the eyes.
+					Without that second check a band can land on a neck or a sleeve.
+					Rejected candidates are replaced, which is why a band sometimes checks
+					several before it settles.
 				</p>
 			</section>
 

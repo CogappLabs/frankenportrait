@@ -16,7 +16,9 @@ Even horizontal thirds only line up when every sitter is framed identically,
 which they never are. Each candidate runs through MediaPipe BlazeFace in the
 browser, and cuts are placed off the returned eye and mouth keypoints rather
 than off image height, with the slice width scaled to the distance between the
-eyes. A portrait with no detectable face is skipped and another drawn.
+eyes. A portrait is skipped and another drawn when no face is found, when the
+detector is not confident, or when the eye-to-mouth drop is too large for the
+distance between the eyes, which is how a band ends up on a neck or a sleeve.
 
 ## Develop
 
