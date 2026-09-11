@@ -1,4 +1,4 @@
-import { type BandName, bandRegion } from "./bands";
+import { type BandName, bandRegion, faceDirection } from "./bands";
 import { detectFaces } from "./faces";
 import { iiifUrl, type Region } from "./iiif";
 import { listProviders, type SearchHit } from "./providers";
@@ -13,6 +13,8 @@ export type Slot = {
 	artist?: string;
 	provider: string;
 	pageUrl?: string;
+	/** Head yaw, negative when the sitter faces their own right. */
+	direction: number | null;
 };
 
 /** Detection runs on a downscaled copy; big IIIF images are slow and needless. */
@@ -79,6 +81,7 @@ export async function makeSlot(
 	const bounds = { width: resolved.width, height: resolved.height };
 
 	let region: Region | null = null;
+	let direction: number | null = null;
 	try {
 		const probe = await loadImage(
 			iiifUrl(
@@ -103,6 +106,7 @@ export async function makeSlot(
 				),
 			};
 			region = bandRegion(scaled, band, bounds);
+			direction = faceDirection(scaled);
 		}
 	} catch {
 		// Detector or image load failed; treat as no face.
@@ -120,6 +124,7 @@ export async function makeSlot(
 		artist: resolved.metadata?.artist,
 		provider: provider.name,
 		pageUrl: resolved.pageUrl,
+		direction,
 	};
 }
 

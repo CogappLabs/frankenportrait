@@ -56,6 +56,14 @@ misses per slot is normal.
 Detection runs on a 640px-wide copy and the keypoints are scaled back up to
 source pixels before the region is computed.
 
+### Direction
+
+`faceDirection` reads head yaw off the nose-tip offset from the eye midpoint,
+in inter-ocular widths. `autoAlign` in `App.tsx` mirrors bands that face away
+from the eyes band, so sitters end up looking the same way. It is head pose
+rather than eye gaze and the keypoints are coarse, so the per-band Flip button
+overrides it and stays put until that band is rerolled.
+
 ### Pool
 
 `searchPool` fetches three pages of 100 per provider from a random offset in the

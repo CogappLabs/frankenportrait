@@ -65,6 +65,26 @@ export function bandRegion(
 	);
 }
 
+/**
+ * Head yaw as nose-tip offset from the eye midpoint, in inter-ocular widths.
+ * Negative means the sitter faces their own right. Returns null without the
+ * three keypoints it needs.
+ *
+ * This is head pose, not eye gaze, and BlazeFace keypoints are coarse, so it
+ * separates profiles reliably and three-quarter views only roughly.
+ */
+export function faceDirection(face: FaceDetection): number | null {
+	const kp = face.keypoints;
+	const left = kp?.leftEye;
+	const right = kp?.rightEye;
+	const nose = kp?.noseTip;
+	if (!left || !right || !nose) return null;
+
+	const ocular = Math.hypot(right.x - left.x, right.y - left.y);
+	if (ocular < 4) return null;
+	return (nose.x - (left.x + right.x) / 2) / ocular;
+}
+
 /** Even horizontal thirds, for images where no face was found. */
 export function thirdsRegion(band: BandName, bounds: Bounds): Region {
 	const i = BANDS.indexOf(band);

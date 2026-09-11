@@ -17,13 +17,50 @@ type BandState = {
 	loading: boolean;
 	tried: number;
 	flipped: boolean;
+	/** True once the Flip button is used, which pins the band against auto-align. */
+	manual: boolean;
 };
 
 const EMPTY: Record<BandName, BandState> = {
-	eyes: { slot: null, loading: false, tried: 0, flipped: false },
-	nose: { slot: null, loading: false, tried: 0, flipped: false },
-	mouth: { slot: null, loading: false, tried: 0, flipped: false },
+	eyes: { slot: null, loading: false, tried: 0, flipped: false, manual: false },
+	nose: { slot: null, loading: false, tried: 0, flipped: false, manual: false },
+	mouth: {
+		slot: null,
+		loading: false,
+		tried: 0,
+		flipped: false,
+		manual: false,
+	},
 };
+
+/**
+ * Yaw below this reads as frontal, where a flip would be noise rather than an
+ * improvement. Roughly a tenth of the inter-ocular distance.
+ */
+const FRONTAL = 0.1;
+
+/** Flip bands that face away from the eyes band, leaving manual choices alone. */
+function autoAlign(
+	bands: Record<BandName, BandState>,
+): Record<BandName, BandState> {
+	const reference = BANDS.map((b) => bands[b].slot?.direction ?? null).find(
+		(d): d is number => d !== null && Math.abs(d) > FRONTAL,
+	);
+	if (reference === undefined) return bands;
+
+	const next = { ...bands };
+	for (const band of BANDS) {
+		const state = bands[band];
+		if (state.manual) continue;
+		const d = state.slot?.direction;
+		const flipped =
+			d != null &&
+			Math.abs(d) > FRONTAL &&
+			Math.sign(d) !== Math.sign(reference);
+		if (flipped !== state.flipped) next[band] = { ...state, flipped };
+	}
+	return next;
+}
 
 export default function App() {
 	const [query, setQuery] = useState("portrait");
@@ -36,14 +73,20 @@ export default function App() {
 	const poolRef = useRef<SearchHit[]>([]);
 
 	const patch = useCallback((band: BandName, next: Partial<BandState>) => {
-		setBands((b) => ({ ...b, [band]: { ...b[band], ...next } }));
+		setBands((b) => autoAlign({ ...b, [band]: { ...b[band], ...next } }));
 	}, []);
 
 	const rerollBand = useCallback(
 		async (band: BandName) => {
 			const hits = poolRef.current;
 			if (!hits.length) return;
-			patch(band, { loading: true, tried: 0, slot: null, flipped: false });
+			patch(band, {
+				loading: true,
+				tried: 0,
+				slot: null,
+				flipped: false,
+				manual: false,
+			});
 			try {
 				const slot = await rollSlot(hits, band, (tried) =>
 					patch(band, { tried }),
@@ -60,7 +103,7 @@ export default function App() {
 	const flipBand = useCallback((band: BandName) => {
 		setBands((b) => ({
 			...b,
-			[band]: { ...b[band], flipped: !b[band].flipped },
+			[band]: { ...b[band], flipped: !b[band].flipped, manual: true },
 		}));
 	}, []);
 
