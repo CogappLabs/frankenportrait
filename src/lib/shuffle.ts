@@ -77,7 +77,11 @@ export async function makeSlot(
 	let region: Region | null = null;
 	try {
 		const probe = await loadImage(
-			iiifUrl(resolved.serviceBase, "full", DETECT_WIDTH),
+			iiifUrl(
+				resolved.serviceBase,
+				"full",
+				Math.min(DETECT_WIDTH, resolved.width),
+			),
 		);
 		const faces = await detectFaces(probe);
 		const best = faces.sort((a, b) => b.score - a.score)[0];
