@@ -1,0 +1,24 @@
+output:
+  - meta
+  - summary
+  - success
+  - failure
+  - execution
+  - execution_out
+  - execution_info
+
+pre-commit:
+  parallel: false
+  jobs:
+    - name: biome
+      glob: "*.{ts,tsx,js,jsx,json,css}"
+      run: npx biome check --no-errors-on-unmatched {staged_files}
+      fail_text: "Biome found issues. Run `npm run format` to auto-fix."
+    - name: typecheck
+      glob: "*.{ts,tsx}"
+      run: npx tsc -b
+      fail_text: "TypeScript errors above. Fix before committing."
+    - name: build
+      glob: "*.{ts,tsx,css,mdx,json,html}"
+      run: npm run build
+      fail_text: "Build failed. See output above."
