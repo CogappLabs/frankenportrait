@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="5" fill="#171717"/>
+
+  <!-- Three bands, three mismatched sitters: wrong scales, off-centre, wonky. -->
+  <g stroke="#fafafa" stroke-width="2" stroke-linecap="round" fill="none">
+    <!-- Eyes: too wide, too far apart -->
+    <circle cx="10" cy="9" r="2.2"/>
+    <circle cx="23" cy="9" r="2.2"/>
+    <circle cx="10" cy="9" r="0.6" fill="#fafafa" stroke="none"/>
+    <circle cx="23" cy="9" r="0.6" fill="#fafafa" stroke="none"/>
+
+    <!-- Nose: off to one side, nothing lines up -->
+    <path d="M14 15 L12.5 20 L16 20.5"/>
+
+    <!-- Mouth: crooked, and smaller than the face above it -->
+    <path d="M11 26 Q16 29.5 22 25.5"/>
+  </g>
+
+  <!-- Seams where the three crops were stitched -->
+  <g stroke="#f59e0b" stroke-width="0.9" opacity="0.85">
+    <path d="M2 13 H30"/>
+    <path d="M2 22.5 H30"/>
+  </g>
+</svg>
