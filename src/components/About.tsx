@@ -34,7 +34,7 @@ export function About({ onBack }: { onBack: () => void }) {
 			</section>
 
 			<section className="space-y-3">
-				<h2 className="text-xl font-bold">It is IIIF all the way down</h2>
+				<h2 className="text-xl font-bold">The cropping is all IIIF</h2>
 				<p>
 					Every crop is a{" "}
 					<a
@@ -45,8 +45,8 @@ export function About({ onBack }: { onBack: () => void }) {
 					>
 						IIIF Image API 3.0
 					</a>{" "}
-					request. Nothing is downloaded, resized or re-hosted: the band you see
-					is a URL of the form
+					request. No image is copied or re-hosted: the band you see is a URL of
+					the form
 				</p>
 				<code className="block bg-neutral-800 rounded p-3 text-xs overflow-x-auto">
 					{"{service}/{x},{y},{w},{h}/900,/0/default.jpg"}
@@ -78,10 +78,10 @@ export function About({ onBack }: { onBack: () => void }) {
 				</p>
 				<p>
 					Cuts are placed off those keypoints rather than off image height, and
-					the slice width is scaled to the distance between the eyes. Features
-					land on features whatever the original framing. A portrait with no
-					detectable face is skipped and another is drawn, which is why a band
-					sometimes checks several before it settles.
+					the slice width is scaled to the distance between the eyes, so
+					features land on features whatever the original framing. A portrait
+					with no detectable face is skipped and another drawn, which is why a
+					band sometimes checks several before it settles.
 				</p>
 			</section>
 
@@ -114,9 +114,10 @@ export function About({ onBack }: { onBack: () => void }) {
 			<section className="space-y-3">
 				<h2 className="text-xl font-bold">Built with</h2>
 				<p className="text-neutral-300">
-					React, Vite, Tailwind and TypeScript, deployed to GitHub Pages. No
-					server: search, detection and composition all happen in the browser.
-					Saving stitches the three bands onto a canvas and hands you a JPEG.
+					React, Vite, Tailwind and TypeScript, on GitHub Pages. There is no
+					server: the browser does the searching, the face detection and the
+					stitching. Save draws the three bands onto a canvas and hands you a
+					JPEG.
 				</p>
 			</section>
 		</div>
