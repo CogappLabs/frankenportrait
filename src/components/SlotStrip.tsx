@@ -6,7 +6,9 @@ type Props = {
 	/** Candidates rejected so far while hunting for a face in this band. */
 	tried: number;
 	failed: boolean;
+	flipped: boolean;
 	onReroll: () => void;
+	onFlip: () => void;
 	label: string;
 };
 
@@ -15,7 +17,9 @@ export function SlotStrip({
 	loading,
 	tried,
 	failed,
+	flipped,
 	onReroll,
+	onFlip,
 	label,
 }: Props) {
 	const credit = slot
@@ -29,6 +33,7 @@ export function SlotStrip({
 					src={slot.url}
 					alt={`${label} from ${slot.title}`}
 					className="w-full block"
+					style={flipped ? { transform: "scaleX(-1)" } : undefined}
 				/>
 			) : (
 				<div
@@ -74,14 +79,26 @@ export function SlotStrip({
 						</>
 					) : null}
 				</p>
-				<button
-					type="button"
-					onClick={onReroll}
-					disabled={loading}
-					className="shrink-0 rounded bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-900 hover:bg-white disabled:opacity-50"
-				>
-					{loading ? "…" : "Reroll"}
-				</button>
+				<div className="shrink-0 flex gap-2">
+					<button
+						type="button"
+						onClick={onFlip}
+						disabled={loading || !slot}
+						aria-pressed={flipped}
+						title={`Flip ${label} horizontally`}
+						className="rounded border border-neutral-400 px-3 py-1 text-xs font-semibold text-neutral-100 hover:bg-neutral-700 disabled:opacity-50"
+					>
+						Flip
+					</button>
+					<button
+						type="button"
+						onClick={onReroll}
+						disabled={loading}
+						className="rounded bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-900 hover:bg-white disabled:opacity-50"
+					>
+						{loading ? "…" : "Reroll"}
+					</button>
+				</div>
 			</div>
 		</div>
 	);

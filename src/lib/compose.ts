@@ -18,7 +18,10 @@ function loadImage(src: string): Promise<HTMLImageElement> {
  * so the inter-ocular normalising done when the band was cut is what makes the
  * features line up rather than anything here.
  */
-export async function composeCanvas(slots: Slot[]): Promise<HTMLCanvasElement> {
+export async function composeCanvas(
+	slots: Slot[],
+	flipped: boolean[] = [],
+): Promise<HTMLCanvasElement> {
 	const images = await Promise.all(slots.map((s) => loadImage(s.url)));
 	const heights = images.map((img) =>
 		Math.round((img.naturalHeight / img.naturalWidth) * WIDTH),
@@ -32,7 +35,15 @@ export async function composeCanvas(slots: Slot[]): Promise<HTMLCanvasElement> {
 
 	let y = 0;
 	images.forEach((img, i) => {
-		ctx.drawImage(img, 0, y, WIDTH, heights[i]);
+		if (flipped[i]) {
+			ctx.save();
+			ctx.translate(WIDTH, y);
+			ctx.scale(-1, 1);
+			ctx.drawImage(img, 0, 0, WIDTH, heights[i]);
+			ctx.restore();
+		} else {
+			ctx.drawImage(img, 0, y, WIDTH, heights[i]);
+		}
 		y += heights[i];
 	});
 	return canvas;
@@ -63,8 +74,11 @@ export function downloadBlob(blob: Blob, filename: string): void {
 	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export async function saveFrankenportrait(slots: Slot[]): Promise<void> {
-	const canvas = await composeCanvas(slots);
+export async function saveFrankenportrait(
+	slots: Slot[],
+	flipped: boolean[] = [],
+): Promise<void> {
+	const canvas = await composeCanvas(slots, flipped);
 	const blob = await canvasToBlob(canvas);
 	downloadBlob(blob, `frankenportrait-${Date.now()}.jpg`);
 }

@@ -12,12 +12,17 @@ const LABELS: Record<BandName, string> = {
 	mouth: "Mouth",
 };
 
-type BandState = { slot: Slot | null; loading: boolean; tried: number };
+type BandState = {
+	slot: Slot | null;
+	loading: boolean;
+	tried: number;
+	flipped: boolean;
+};
 
 const EMPTY: Record<BandName, BandState> = {
-	eyes: { slot: null, loading: false, tried: 0 },
-	nose: { slot: null, loading: false, tried: 0 },
-	mouth: { slot: null, loading: false, tried: 0 },
+	eyes: { slot: null, loading: false, tried: 0, flipped: false },
+	nose: { slot: null, loading: false, tried: 0, flipped: false },
+	mouth: { slot: null, loading: false, tried: 0, flipped: false },
 };
 
 export default function App() {
@@ -38,7 +43,7 @@ export default function App() {
 		async (band: BandName) => {
 			const hits = poolRef.current;
 			if (!hits.length) return;
-			patch(band, { loading: true, tried: 0, slot: null });
+			patch(band, { loading: true, tried: 0, slot: null, flipped: false });
 			try {
 				const slot = await rollSlot(hits, band, (tried) =>
 					patch(band, { tried }),
@@ -51,6 +56,13 @@ export default function App() {
 		},
 		[patch],
 	);
+
+	const flipBand = useCallback((band: BandName) => {
+		setBands((b) => ({
+			...b,
+			[band]: { ...b[band], flipped: !b[band].flipped },
+		}));
+	}, []);
 
 	const shuffleAll = useCallback(async () => {
 		if (!poolRef.current.length) return;
@@ -84,21 +96,21 @@ export default function App() {
 		void loadPool("portrait");
 	}, [loadPool]);
 
-	const complete = BANDS.map((b) => bands[b].slot).filter(
-		(s): s is NonNullable<typeof s> => s !== null,
-	);
+	const filled = BANDS.filter((b) => bands[b].slot !== null);
+	const complete = filled.map((b) => bands[b].slot as Slot);
+	const flips = filled.map((b) => bands[b].flipped);
 
 	const save = useCallback(async () => {
 		if (complete.length !== BANDS.length) return;
 		setSaving(true);
 		try {
-			await saveFrankenportrait(complete);
+			await saveFrankenportrait(complete, flips);
 		} catch (e) {
 			setError(e instanceof Error ? e.message : String(e));
 		} finally {
 			setSaving(false);
 		}
-	}, [complete]);
+	}, [complete, flips]);
 
 	const anyBusy = searching || BANDS.some((b) => bands[b].loading);
 
@@ -168,8 +180,10 @@ export default function App() {
 									!bands[band].loading &&
 									bands[band].slot === null
 								}
+								flipped={bands[band].flipped}
 								label={LABELS[band]}
 								onReroll={() => void rerollBand(band)}
+								onFlip={() => flipBand(band)}
 							/>
 						))}
 					</div>
