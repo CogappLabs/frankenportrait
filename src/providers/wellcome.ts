@@ -1,3 +1,4 @@
+import { declaresUpscaling } from "../lib/iiif";
 import { type Provider, registerProvider } from "../lib/providers";
 
 const SEARCH_API = "https://api.wellcomecollection.org/catalogue/v2/works";
@@ -83,6 +84,7 @@ export const wellcomeProvider: Provider = {
 			serviceBase,
 			width: info.width,
 			height: info.height,
+			upscales: declaresUpscaling(info),
 			label: title || serviceBase,
 			metadata: {
 				title: title || "",

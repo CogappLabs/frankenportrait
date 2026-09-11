@@ -17,6 +17,9 @@ export type Slot = {
 /** Detection runs on a downscaled copy; big IIIF images are slow and needless. */
 const DETECT_WIDTH = 640;
 
+/** Displayed band width. Upscaled server-side where the service allows it. */
+const BAND_WIDTH = 800;
+
 function loadImage(src: string): Promise<HTMLImageElement> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
@@ -81,6 +84,7 @@ export async function makeSlot(
 				resolved.serviceBase,
 				"full",
 				Math.min(DETECT_WIDTH, resolved.width),
+				resolved.upscales,
 			),
 		);
 		const faces = await detectFaces(probe);
@@ -110,7 +114,7 @@ export async function makeSlot(
 		hit,
 		serviceBase: resolved.serviceBase,
 		region,
-		url: iiifUrl(resolved.serviceBase, region, 800),
+		url: iiifUrl(resolved.serviceBase, region, BAND_WIDTH, resolved.upscales),
 		title: resolved.metadata?.title || resolved.label,
 		artist: resolved.metadata?.artist,
 		provider: provider.name,

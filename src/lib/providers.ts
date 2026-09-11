@@ -12,6 +12,8 @@ export type ResolvedSource = {
 	serviceBase: string;
 	width: number;
 	height: number;
+	/** Service advertises sizeUpscaling, so a band may be asked for at "^w,". */
+	upscales: boolean;
 	label: string;
 	metadata?: { title: string; artist?: string; date?: string };
 };
